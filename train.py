@@ -24,6 +24,7 @@ from data_utils import build_tokenizer, build_embedding_matrix, Tokenizer4Bert, 
 from models import LSTM, IAN, MemNet, RAM, TD_LSTM, TC_LSTM, Cabasc, ATAE_LSTM, TNet_LF, AOA, MGAN, ASGCN
 from models.aen import CrossEntropyLoss_LSR, AEN_BERT
 from models.bert_spc import BERT_SPC
+from models.bert_g import granular_BERT
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -232,6 +233,7 @@ def main():
         'asgcn': ASGCN,
         'bert_spc': BERT_SPC,
         'aen_bert': AEN_BERT,
+        'bert_granular': granular_BERT,
         # 'lcf_bert': LCF_BERT,
         # default hyper-parameters for LCF-BERT model is as follws:
         # lr: 2e-5
