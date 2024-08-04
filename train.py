@@ -232,7 +232,7 @@ def main():
         'asgcn': ASGCN,
         'bert_spc': BERT_SPC,
         'aen_bert': AEN_BERT,
-        'lcf_bert': LCF_BERT,
+        # 'lcf_bert': LCF_BERT,
         # default hyper-parameters for LCF-BERT model is as follws:
         # lr: 2e-5
         # l2: 1e-5
