@@ -49,10 +49,10 @@ class granular_BERT(nn.Module):
         context = self.squeeze_embedding(context, context_len)
         context = self.bert(context)
         print(context)
-        context = self.dropout(context)
+        context = self.dropout(context['last_hidden_state'])
         target = self.squeeze_embedding(target, target_len)
         target= self.bert(target)
-        target = self.dropout(target)
+        target = self.dropout(target['last_hidden_state'])
 
         G1CT_s=torch.matmul(context,self.W)
         G1CT=torch.matmul(G1CT_s, target.transpose(1,2))
