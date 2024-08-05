@@ -45,6 +45,7 @@ class granular_BERT(nn.Module):
     def forward(self, inputs):
         context, target = inputs[0], inputs[1]
         context_len = torch.sum(context != 0, dim=-1)
+        print(context_len)
         target_len = torch.sum(target != 0, dim=-1)
         context = self.squeeze_embedding(context, context_len)
         context = self.bert(context)
