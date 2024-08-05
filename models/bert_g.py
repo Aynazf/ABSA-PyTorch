@@ -48,7 +48,6 @@ class granular_BERT(nn.Module):
         target_len = torch.sum(target != 0, dim=-1)
         context = self.squeeze_embedding(context, context_len)
         context = self.bert(context)
-        print(context)
         context = self.dropout(context['last_hidden_state'])
         target = self.squeeze_embedding(target, target_len)
         target= self.bert(target)
