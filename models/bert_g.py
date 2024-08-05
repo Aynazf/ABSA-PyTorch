@@ -47,10 +47,11 @@ class granular_BERT(nn.Module):
         context_len = torch.sum(context != 0, dim=-1)
         target_len = torch.sum(target != 0, dim=-1)
         context = self.squeeze_embedding(context, context_len)
-        context, _ = self.bert(context)
+        context = self.bert(context)
+        print(context)
         context = self.dropout(context)
         target = self.squeeze_embedding(target, target_len)
-        target, _ = self.bert(target)
+        target= self.bert(target)
         target = self.dropout(target)
 
         G1CT_s=torch.matmul(context,self.W)
