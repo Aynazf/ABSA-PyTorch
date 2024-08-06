@@ -9,6 +9,26 @@ def self_attention(granules):
     attention_weights = nn.functional.softmax(attention_scores, dim=-1)
     return attention_weights
 
+class SelfAttention(nn.Module):
+  def __init__(self, input_dim):
+    super(SelfAttention, self).__init__()
+    self.input_dim = input_dim
+    self.query = nn.Linear(input_dim, input_dim) # [batch_size, seq_length, input_dim]
+    self.key = nn.Linear(input_dim, input_dim) # [batch_size, seq_length, input_dim]
+    self.value = nn.Linear(input_dim, input_dim)
+    self.softmax == nn.Softmax(dim=2)
+   
+  def forward(self, x): # x.shape (batch_size, seq_length, input_dim)
+    queries = self.query(x)
+    keys = self.key(x)
+    values = self.value(x)
+
+    score = torch.bmm(queries, keys.transpose(1, 2))/(self.input_dim**0.5)
+    attention = self.softmax(scores)
+    weighted = torch.bmm(attention, values)
+    return weighted
+
+
 def weighted_sum(granules, attention_weights):
     weighted_granules = torch.matmul(attention_weights, granules)
     return weighted_granules.sum(dim=1)
