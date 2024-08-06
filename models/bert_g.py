@@ -27,7 +27,7 @@ class granular_BERT(nn.Module):
         self.lstm_target = nn.LSTM(bert_output_dim, hidden_dim, bidirectional=True, batch_first=True )
         self.second_lstm_sentense=nn.LSTM(2*hidden_dim,hidden_dim, bidirectional=True, batch_first=True)
         self.second_lstm_target=nn.LSTM(2*hidden_dim,hidden_dim, bidirectional=True, batch_first=True)
-        self.W = nn.Parameter(torch.empty(bert_output_dim, bert_output_dim))
+        self.W = nn.Parameter(torch.empty(2* hidden_dim, 2* hidden_dim))
         nn.init.xavier_uniform_(self.W)
 
         self.W_a = nn.Parameter(torch.empty( 2* hidden_dim,  2* hidden_dim))
@@ -54,12 +54,11 @@ class granular_BERT(nn.Module):
         target= self.bert(target)
         target = self.dropout(target['last_hidden_state'])
 
-        G1CT_s=torch.matmul(context,self.W)
-        G1CT=torch.matmul(G1CT_s, target.transpose(1,2))
-
-
         sentence_lstm_output, (sentence_hidden, _) = self.lstm_sentence(context)
         target_lstm_output, (target_hidden, _) = self.lstm_target(target)
+
+        G1CT_s=torch.matmul(sentence_lstm_output,self.W)
+        G1CT=torch.matmul(G1CT_s, target_lstm_output.transpose(1,2))
 
         G1C_m=torch.matmul(G1CT,target_lstm_output)
         G1T_m=torch.matmul(G1CT.transpose(1,2),sentence_lstm_output)
