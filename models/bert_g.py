@@ -139,10 +139,10 @@ class granular_BERT(nn.Module):
         # target_hidden = torch.cat((target_hidden[-2,:,:], target_hidden[-1,:,:]), dim=1) #shak 4
         # print("fff",sentence_hidden.shape)
 
-        hc_mean = torch.div(torch.sum(hc, dim=1), ac.unsqueeze(1).float())
-        ht_mean = torch.div(torch.sum(ht, dim=1), at.unsqueeze(1).float())
+        # hc_mean = torch.div(torch.sum(hc, dim=1), ac.unsqueeze(1).float())
+        # ht_mean = torch.div(torch.sum(ht, dim=1), at.unsqueeze(1).float())
         # s1_mean = torch.div(torch.sum(s1, dim=1), context_len.unsqueeze(1).float())
-        combined = torch.cat((hc_mean, ht_mean), dim=1)
+        combined = torch.cat((ac, at), dim=1)
         combined = self.dropout(combined)
         output = self.fc(combined)
         return self.softmax(output)
