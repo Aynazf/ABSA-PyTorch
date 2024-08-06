@@ -50,6 +50,8 @@ class granular_BERT(nn.Module):
         self.W = nn.Parameter(torch.empty(2* hidden_dim, 2* hidden_dim))
         nn.init.xavier_uniform_(self.W)
 
+        self.self_att_context=SelfAttention(2* hidden_dim)
+        self.self_att_target=SelfAttention(2* hidden_dim)
         self.W_a = nn.Parameter(torch.empty( 2* hidden_dim,  2* hidden_dim))
         nn.init.xavier_uniform_(self.W_a)
         self.b_a = nn.Parameter(torch.empty(90))
@@ -94,8 +96,8 @@ class granular_BERT(nn.Module):
         sentence_lstm_output, (sentence_hidden, _) = self.second_lstm_sentense(G2C_m)
         target_lstm_output, (target_hidden, _) = self.second_lstm_target(G2T_m)
 
-        at=self_attention(target_lstm_output)
-        ac=self_attention(sentence_lstm_output)
+        at=self_att_target(target_lstm_output)
+        ac=self_att_context(sentence_lstm_output)
 
         weighted_t=weighted_sum(target_lstm_output, at)
         weighted_c=weighted_sum(sentence_lstm_output, ac)
