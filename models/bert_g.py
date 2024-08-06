@@ -54,11 +54,11 @@ class granular_BERT(nn.Module):
         self.self_att_target=SelfAttention(2* hidden_dim)
         self.W_a = nn.Parameter(torch.empty( 2* hidden_dim,  2* hidden_dim))
         nn.init.xavier_uniform_(self.W_a)
-        self.b_a = nn.Parameter(torch.empty(90))
+        self.b_a = nn.Parameter(torch.empty(2* hidden_dim))
         nn.init.zeros_(self.b_a)
         self.W_b = nn.Parameter(torch.empty(2* hidden_dim, 2* hidden_dim))
         nn.init.xavier_uniform_(self.W_b)
-        self.b_b = nn.Parameter(torch.empty(10))
+        self.b_b = nn.Parameter(torch.empty(2* hidden_dim))
         nn.init.zeros_(self.b_b)
 
         self.fc = nn.Linear(hidden_dim * 4, num_classes)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
@@ -67,7 +67,6 @@ class granular_BERT(nn.Module):
     def forward(self, inputs):
         context, target = inputs[0], inputs[1]
         context_len = torch.sum(context != 0, dim=-1)
-        print(context_len)
         target_len = torch.sum(target != 0, dim=-1)
         context = self.squeeze_embedding(context, context_len)
         context = self.bert(context)
