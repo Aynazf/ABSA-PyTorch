@@ -69,7 +69,7 @@ class granular_BERT(nn.Module):
         # self.ffn_t = PositionwiseFeedForward(opt.hidden_dim, dropout=opt.dropout)
         # self.attn_s1 = Attention(opt.hidden_dim, n_head=8, score_function='mlp', dropout=opt.dropout)
         
-        self.fc = nn.Linear(hidden_dim * 4, num_classes)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
+        self.dense = nn.Linear(hidden_dim * 4, opt.polarities_dim)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, inputs):
@@ -144,8 +144,10 @@ class granular_BERT(nn.Module):
         # s1_mean = torch.div(torch.sum(s1, dim=1), context_len.unsqueeze(1).float())
         combined = torch.cat((ac, at), dim=1)
         combined = self.dropout(combined)
-        output = self.fc(combined)
-        return self.softmax(output)
+        output = self.dense(combined)
+        out=self.softmax(output)
+        print(out.shape)
+        return out
 
 
 
