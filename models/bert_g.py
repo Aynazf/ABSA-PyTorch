@@ -16,7 +16,7 @@ class SelfAttention(nn.Module):
     self.query = nn.Linear(input_dim, input_dim) # [batch_size, seq_length, input_dim]
     self.key = nn.Linear(input_dim, input_dim) # [batch_size, seq_length, input_dim]
     self.value = nn.Linear(input_dim, input_dim)
-    self.softmax == nn.Softmax(dim=2)
+    self.softmax = nn.Softmax(dim=2)
    
   def forward(self, x): # x.shape (batch_size, seq_length, input_dim)
     queries = self.query(x)
@@ -24,7 +24,7 @@ class SelfAttention(nn.Module):
     values = self.value(x)
 
     score = torch.bmm(queries, keys.transpose(1, 2))/(self.input_dim**0.5)
-    attention = self.softmax(scores)
+    attention = self.softmax(score)
     weighted = torch.bmm(attention, values)
     return weighted
 
@@ -96,20 +96,20 @@ class granular_BERT(nn.Module):
         sentence_lstm_output, (sentence_hidden, _) = self.second_lstm_sentense(G2C_m)
         target_lstm_output, (target_hidden, _) = self.second_lstm_target(G2T_m)
 
-        at=self_att_target(target_lstm_output)
-        ac=self_att_context(sentence_lstm_output)
+        at=self.self_att_target(target_lstm_output)
+        ac=self.self_att_context(sentence_lstm_output)
 
-        weighted_t=weighted_sum(target_lstm_output, at)
-        weighted_c=weighted_sum(sentence_lstm_output, ac)
-        shape_t=weighted_t.shape
-        weighted_t=weighted_t.view(shape_t[0],1,shape_t[1])
+        # weighted_t=weighted_sum(target_lstm_output, at)
+        # weighted_c=weighted_sum(sentence_lstm_output, ac)
+        # shape_t=weighted_t.shape
+        # weighted_t=weighted_t.view(shape_t[0],1,shape_t[1])
 
-        shape_c=weighted_c.shape
-        weighted_c=weighted_c.view(shape_c[0],1,shape_c[1])
+        # shape_c=weighted_c.shape
+        # weighted_c=weighted_c.view(shape_c[0],1,shape_c[1])
 
         multi_c_w=torch.matmul(sentence_lstm_output,self.W_a)
 
-        g_c=torch.tanh(torch.matmul(multi_c_w,weighted_t.transpose(1,2))+self.b_a)
+        g_c=torch.tanh(torch.matmul(multi_c_w,at.transpose(1,2))+self.b_a)
 
 
         e_c=torch.exp(g_c)
@@ -120,7 +120,7 @@ class granular_BERT(nn.Module):
 
 
         multi_t_w=torch.matmul(target_lstm_output,self.W_b)
-        g_t=torch.tanh(torch.matmul(multi_t_w,weighted_c.transpose(1,2))+self.b_b)
+        g_t=torch.tanh(torch.matmul(multi_t_w,ac.transpose(1,2))+self.b_b)
 
         e_t=torch.exp(g_t)
         sum_e_t=torch.sum(e_t)
