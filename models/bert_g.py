@@ -65,7 +65,7 @@ class granular_BERT(nn.Module):
         
         self.attention_aspect = Attention(2* hidden_dim, score_function='bi_linear')
         self.attention_context = Attention(2* hidden_dim, score_function='bi_linear')        
-        self.dense = nn.Linear(hidden_dim * 2, opt.polarities_dim)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
+        self.dense = nn.Linear(hidden_dim * 4, opt.polarities_dim)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, inputs):
