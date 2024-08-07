@@ -63,13 +63,9 @@ class granular_BERT(nn.Module):
         # self.b_b = nn.Parameter(torch.empty(2* hidden_dim))
         # nn.init.zeros_(self.b_b)
         
-        # self.attn_k = Attention(opt.bert_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=opt.dropout)
-        # self.attn_q = Attention(opt.bert_dim, out_dim=opt.hidden_dim, n_head=8, score_function='mlp', dropout=opt.dropout) 
-        # self.ffn_c = PositionwiseFeedForward(opt.hidden_dim, dropout=opt.dropout)
-        # self.ffn_t = PositionwiseFeedForward(opt.hidden_dim, dropout=opt.dropout)
-        # self.attn_s1 = Attention(opt.hidden_dim, n_head=8, score_function='mlp', dropout=opt.dropout)
-        
-        self.dense = nn.Linear(hidden_dim * 4, opt.polarities_dim)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
+        self.attention_aspect = Attention(opt.hidden_dim, score_function='bi_linear')
+        self.attention_context = Attention(opt.hidden_dim, score_function='bi_linear')        
+        self.dense = nn.Linear(hidden_dim * 2, opt.polarities_dim)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, inputs):
@@ -102,9 +98,20 @@ class granular_BERT(nn.Module):
 
         sentence_lstm_output, (sentence_hidden, _) = self.second_lstm_sentense(G2C_m)
         target_lstm_output, (target_hidden, _) = self.second_lstm_target(G2T_m)
+        
+        target_len = torch.tensor(target_len, dtype=torch.float).to(self.opt.device)
+        aspect_pool = torch.sum(target_lstm_output, dim=1)
+        aspect_pool = torch.div(aspect_pool, target_len.view(target_len.size(0), 1))
 
-        at=self.self_att_target(target_lstm_output)
-        ac=self.self_att_context(sentence_lstm_output)
+        text_raw_len = torch.tensor(context_len, dtype=torch.float).to(self.opt.device)
+        context_pool = torch.sum(sentence_lstm_output, dim=1)
+        context_pool = torch.div(context_pool, text_raw_len.view(text_raw_len.size(0), 1))
+
+        aspect_final = self.attention_aspect(aspect, context_pool).squeeze(dim=1)
+        context_final = self.attention_context(context, aspect_pool).squeeze(dim=1)
+        
+        # at=self.self_att_target(target_lstm_output)
+        # ac=self.self_att_context(sentence_lstm_output)
 
         # weighted_t=weighted_sum(target_lstm_output, at)
         # weighted_c=weighted_sum(sentence_lstm_output, ac)
@@ -142,8 +149,8 @@ class granular_BERT(nn.Module):
         # hc_mean = torch.div(torch.sum(hc, dim=1), ac.unsqueeze(1).float())
         # ht_mean = torch.div(torch.sum(ht, dim=1), at.unsqueeze(1).float())
         # s1_mean = torch.div(torch.sum(s1, dim=1), context_len.unsqueeze(1).float())
-        combined = torch.cat((ac, at), dim=1)
-        combined = self.dropout(combined)
+        combined = torch.cat((aspect_final, context_final), dim=-1)
+        # combined = self.dropout(combined)
         output = self.dense(combined)
         out=self.softmax(output)
         print(out.shape)
