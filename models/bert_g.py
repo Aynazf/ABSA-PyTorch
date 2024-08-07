@@ -109,7 +109,7 @@ class granular_BERT(nn.Module):
 
         aspect_final, _ = self.attention_aspect(target_lstm_output, context_pool)
         aspect_final = aspect_final.squeeze(dim=1)
-        context_final,_ = self.attention_context(sentence_lstm_output, aspect_pool).squeeze(dim=1)
+        context_final,_ = self.attention_context(sentence_lstm_output, aspect_pool)
         context_final = context_final.squeeze(dim=1)
         
         # at=self.self_att_target(target_lstm_output)
