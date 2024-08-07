@@ -107,8 +107,8 @@ class granular_BERT(nn.Module):
         context_pool = torch.sum(sentence_lstm_output, dim=1)
         context_pool = torch.div(context_pool, text_raw_len.view(text_raw_len.size(0), 1))
 
-        aspect_final = self.attention_aspect(aspect, context_pool).squeeze(dim=1)
-        context_final = self.attention_context(context, aspect_pool).squeeze(dim=1)
+        aspect_final = self.attention_aspect(target_lstm_output, context_pool).squeeze(dim=1)
+        context_final = self.attention_context(sentence_lstm_output, aspect_pool).squeeze(dim=1)
         
         # at=self.self_att_target(target_lstm_output)
         # ac=self.self_att_context(sentence_lstm_output)
