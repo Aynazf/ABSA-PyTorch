@@ -63,8 +63,8 @@ class granular_BERT(nn.Module):
         # self.b_b = nn.Parameter(torch.empty(2* hidden_dim))
         # nn.init.zeros_(self.b_b)
         
-        self.attention_aspect = Attention(opt.hidden_dim, score_function='bi_linear')
-        self.attention_context = Attention(opt.hidden_dim, score_function='bi_linear')        
+        self.attention_aspect = Attention(2* hidden_dim, score_function='bi_linear')
+        self.attention_context = Attention(2* hidden_dim, score_function='bi_linear')        
         self.dense = nn.Linear(hidden_dim * 2, opt.polarities_dim)  # 2 * hidden_dim (sentence) + 2 * hidden_dim (target)
         self.softmax = nn.Softmax(dim=1)
 
@@ -107,7 +107,7 @@ class granular_BERT(nn.Module):
         context_pool = torch.sum(sentence_lstm_output, dim=1)
         context_pool = torch.div(context_pool, text_raw_len.view(text_raw_len.size(0), 1))
 
-        aspect_final, _ = self.attention_aspect(sentence_lstm_output, context_pool)
+        aspect_final, _ = self.attention_aspect(target_lstm_output, context_pool)
         aspect_final = aspect_final.squeeze(dim=1)
         context_final,_ = self.attention_context(sentence_lstm_output, aspect_pool).squeeze(dim=1)
         context_final = context_final.squeeze(dim=1)
