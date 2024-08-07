@@ -155,7 +155,7 @@ class granular_BERT(nn.Module):
         # combined = self.dropout(combined)
         output = self.dense(combined)
         out=self.softmax(output)
-        print(out.shape)
+        
         return out
 
 
