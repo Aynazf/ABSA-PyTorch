@@ -162,7 +162,7 @@ class Instructor:
         targets_np = t_targets_all.cpu().numpy()
         outputs_np = torch.argmax(t_outputs_all, dim=-1).cpu().numpy()
         acc = n_correct / n_total
-        f1 = metrics.f1_score(t_targets_all.cpu(), torch.argmax(t_outputs_all, -1).cpu(), labels=[0, 1, 2], average='macro')
+        f1 = metrics.f1_score(targets_np, outputs_np, labels=[0, 1, 2], average='macro')
         return acc, f1
 
     def run(self):
