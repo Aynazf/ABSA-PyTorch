@@ -191,7 +191,7 @@ def main():
     parser.add_argument('--initializer', default='xavier_uniform_', type=str)
     parser.add_argument('--lr', default=2e-5, type=float, help='try 5e-5, 2e-5 for BERT, 1e-3 for others')
     parser.add_argument('--dropout', default=0.1, type=float)
-    parser.add_argument('--l2reg', default=0.01, type=float)
+    parser.add_argument('--l2reg', default=0.0001, type=float)
     parser.add_argument('--num_epoch', default=20, type=int, help='try larger number for non-BERT models')
     parser.add_argument('--batch_size', default=16, type=int, help='try 16, 32, 64 for BERT models')
     parser.add_argument('--log_step', default=10, type=int)
