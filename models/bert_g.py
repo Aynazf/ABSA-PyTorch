@@ -37,7 +37,7 @@ def weighted_sum(granules, attention_weights):
 
 
 class granular_BERT(nn.Module):
-    def __init__(self, bert,opt, hidden_dim=128, num_classes=3):
+    def __init__(self, bert,opt, hidden_dim=256, num_classes=3):
         super(granular_BERT, self).__init__() # shak 2
         self.opt = opt
         self.bert = bert
