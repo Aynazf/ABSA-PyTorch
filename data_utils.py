@@ -125,13 +125,13 @@ class Tokenizer4Bert:
 
 class ABSADataset(Dataset):
     def __init__(self, fname, tokenizer):
-        
+        count=0
         fin = open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
         lines = fin.readlines()
         fin.close()
-        fin = open(fname+'.graph', 'rb')
-        idx2graph = pickle.load(fin)
-        fin.close()
+        # fin = open(fname+'.graph', 'rb')
+        # idx2graph = pickle.load(fin)
+        # fin.close()
 
         all_data = []
         for i in range(0, len(lines), 3):
@@ -150,7 +150,7 @@ class ABSADataset(Dataset):
             aspect_len = np.sum(aspect_indices != 0)
             aspect_boundary = np.asarray([left_len, left_len + aspect_len - 1], dtype=np.int64)
             polarity = int(polarity) + 1
-
+            count+=1
             full_sen='[CLS] ' + text_left + " " + aspect + " " + text_right + ' [SEP] ' + aspect + " [SEP]"
             text_len = np.sum(text_indices != 0)
             concat_bert_indices = tokenizer.text_to_sequence(full_sen)
@@ -161,9 +161,9 @@ class ABSADataset(Dataset):
             full_tar="[CLS] " + aspect + " [SEP]"
             text_bert_indices = tokenizer.text_to_sequence(full_con)
             aspect_bert_indices = tokenizer.text_to_sequence(full_tar)
-
-            dependency_graph = np.pad(idx2graph[i], \
-                ((0,tokenizer.max_seq_len-idx2graph[i].shape[0]),(0,tokenizer.max_seq_len-idx2graph[i].shape[0])), 'constant')
+            dependency_graph=[]
+            # dependency_graph = np.pad(idx2graph[i], \
+                # ((0,tokenizer.max_seq_len-idx2graph[i].shape[0]),(0,tokenizer.max_seq_len-idx2graph[i].shape[0])), 'constant')
 
             data = {
                 'concat_bert_indices': concat_bert_indices,
@@ -183,6 +183,7 @@ class ABSADataset(Dataset):
             }
 
             all_data.append(data)
+        print(fname, count)    
         self.data = all_data
 
     def __getitem__(self, index):
