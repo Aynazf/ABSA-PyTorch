@@ -125,6 +125,7 @@ class Tokenizer4Bert:
 
 class ABSADataset(Dataset):
     def __init__(self, fname, tokenizer):
+        
         fin = open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
         lines = fin.readlines()
         fin.close()
@@ -150,13 +151,16 @@ class ABSADataset(Dataset):
             aspect_boundary = np.asarray([left_len, left_len + aspect_len - 1], dtype=np.int64)
             polarity = int(polarity) + 1
 
+            full_sen='[CLS] ' + text_left + " " + aspect + " " + text_right + ' [SEP] ' + aspect + " [SEP]"
             text_len = np.sum(text_indices != 0)
-            concat_bert_indices = tokenizer.text_to_sequence('[CLS] ' + text_left + " " + aspect + " " + text_right + ' [SEP] ' + aspect + " [SEP]")
+            concat_bert_indices = tokenizer.text_to_sequence(full_sen)
             concat_segments_indices = [0] * (text_len + 2) + [1] * (aspect_len + 1)
             concat_segments_indices = pad_and_truncate(concat_segments_indices, tokenizer.max_seq_len)
 
-            text_bert_indices = tokenizer.text_to_sequence("[CLS] " + text_left + " " + aspect + " " + text_right + " [SEP]")
-            aspect_bert_indices = tokenizer.text_to_sequence("[CLS] " + aspect + " [SEP]")
+            full_con="[CLS] " + text_left + " " + aspect + " " + text_right + " [SEP]"
+            full_tar="[CLS] " + aspect + " [SEP]"
+            text_bert_indices = tokenizer.text_to_sequence(full_con)
+            aspect_bert_indices = tokenizer.text_to_sequence(full_tar)
 
             dependency_graph = np.pad(idx2graph[i], \
                 ((0,tokenizer.max_seq_len-idx2graph[i].shape[0]),(0,tokenizer.max_seq_len-idx2graph[i].shape[0])), 'constant')
