@@ -255,14 +255,14 @@ def main():
         'laptop': {
             'train': './datasets/semeval14/Laptops_Train.xml.seg',
             'test': './datasets/semeval14/Laptops_Test_Gold.xml.seg'
-        }
+        },
         'restaurant15': {
             'train': './datasets/semeval15/Restaurants_Train.xml.seg',
             'test': './datasets/semeval15/Restaurants_Test_Gold.xml.seg'
         },
         'restaurant16': {
             'train': './datasets/semeval16/Restaurants_Train.xml.seg',
-            'test': './datasets/semeval146/Restaurants_Test_Gold.xml.seg'
+            'test': './datasets/semeval16/Restaurants_Test_Gold.xml.seg'
         }
         
     }
